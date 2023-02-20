@@ -32,7 +32,7 @@ function internauteConnecte(){
 
 function internauteConnecteAdmin(){
     // si un fichier contenant une sesssion nommée membre n'existe pas (dans le dossier wamp/tmp), alors la fonction internauteConnecte retourne FALSE, non il n'est pas connecté
-    if(!internauteConnecte() && $_SESSION['membre']['statut'] == 1){
+    if(internauteConnecte() && $_SESSION['membre']['statut'] == 1){
         return TRUE;
     }else{
         // dans le cas ou  ce fichier existe, cette même fonction retournera TRUE, oui il est connecté, car sa session existe

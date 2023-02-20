@@ -1,4 +1,14 @@
+<?php
+require_once('../include/init.php');
 
+if(!internauteConnecteAdmin()){
+    header('location:' . URL . 'connexion.php' );
+    exit();
+}
+
+require_once('includeAdmin/header.php');
+
+?>
 
 <!-- $erreur .= '<div class="alert alert-danger" role="alert">Erreur format mot de passe !</div>'; -->
 
@@ -23,42 +33,31 @@
 
 <h2 class="my-5">Formulaire  des utilisateurs</h2>
 
+<?php if(isset($_GET['action'])): ?>
 <form class="my-5" method="POST" action="">
-
-    
-
     <div class="row">
         <div class="col-md-4 mt-5">
         <label class="form-label" for="pseudo"><div class="badge badge-dark text-wrap">Pseudo</div></label>
         <input class="form-control" type="text" name="pseudo" id="pseudo"  placeholder="Pseudo">
         </div>
-
-        
-        
         <div class="col-md-4 mt-5">
         <label class="form-label" for="mdp"><div class="badge badge-dark text-wrap">Mot de passe</div></label>
         <input class="form-control" type="password" name="mdp" id="mdp" placeholder="Mot de passe">
         </div>
-        
-        
-        
         <div class="col-md-4 mt-5">
         <label class="form-label" for="email"><div class="badge badge-dark text-wrap">Email</div></label>
         <input class="form-control" type="email" name="email" id="email"  placeholder="Email">
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-4 mt-5">
         <label class="form-label" for="nom"><div class="badge badge-dark text-wrap">Nom</div></label>
         <input class="form-control" type="text" name="nom" id="nom"  placeholder="Nom">
         </div>
-
         <div class="col-md-4 mt-5">
         <label class="form-label" for="prenom"><div class="badge badge-dark text-wrap">Prénom</div></label>
         <input class="form-control" type="text" name="prenom" id="prenom"  placeholder="Prénom">
         </div>
-
         <div class="col-md-4 mt-4">
             <p><div class="badge badge-dark text-wrap">Civilité</div></p>
 
@@ -69,52 +68,63 @@
             <label class="mx-2" for="civilite2">Homme</label>
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-4 mt-5">
             <label class="form-label" for="ville"><div class="badge badge-dark text-wrap">Ville</div></label>
             <input class="form-control" type="text" name="ville" id="ville"  placeholder="Ville">
         </div>
-
         <div class="col-md-4 mt-5">
             <label class="form-label" for="code_postal"><div class="badge badge-dark text-wrap">Code Postal</div></label>
             <input class="form-control" type="text" name="code_postal" id="code_postal"  placeholder="Code postal">
         </div>
-
         <div class="col-md-4 mt-5">
             <label class="form-label" for="adresse"><div class="badge badge-dark text-wrap">Adresse</div></label>
             <input class="form-control" type="text" name="adresse" id="adresse"  placeholder="Adresse">
         </div>
     </div>
-
     <div class="col-md-1 mt-5">
     <button type="submit" class="btn btn-outline-dark btn-warning">Valider</button>
     </div>
-
 </form>
+<?php endif; ?>
 
-<h2 class="py-5">Nombre de ... en base de données: </h2>
+<h2 class="py-5">Nombre d'utilisateurs en base de données: </h2>
 
 <div class="row justify-content-center py-5">
     <a href=''>
         <button type="button" class="btn btn-sm btn-outline-dark shadow rounded">
-        <i class="bi bi-plus-circle-fill"></i> Ajouter un utilisateur
+        <i class="bi bi-plus-circle-fill"></i> Ajouter un utilisateur...
         </button>
     </a>
 </div>
 
 <table class="table table-dark text-center">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
+        <?php $afficheUsers = $pdo->query("SELECT * FROM membre ORDER BY pseudo");?>
+        <thead>
+            <tr>
+                <?php for($i = 0; $i < $afficheUsers->columnCount(); $i++):
+                    $colonne = $afficheUsers->getColumnMeta($i); ?>
+                    <?php if($colonne['name'] != 'mdp'): ?>
+                    <th><?= $colonne['name']?></th>
+                    <?php endif; ?>
+                <?php endfor ;?>
+                <th colspan=2>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while($user = $afficheUsers->fetch(PDO::FETCH_ASSOC)): ?>
+            <tr>
+                <?php foreach($user as $indice => $value): ?>
+                <?php if($indice != 'mdp'): ?>
+                <td> <?php echo $value ?> </td>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                <td><a href='?action=update&id_membre=<?= $user['id_membre']?>'><i class="bi bi-pen-fill text-warning"></i></a></td>
+                <td><a data-href="?action=delete&id_membre=<?= $user['id_membre']?>" data-toggle="modal" data-target="#confirm-delete"><i class="bi bi-trash-fill text-danger" style="font-size: 1.5rem;"></i></a></td>
+            </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
 
 <nav>
   <ul class="pagination justify-content-end">
@@ -184,3 +194,5 @@
   </div>
 </div>
 <!-- modal -->
+
+<?php require_once('includeAdmin/footer.php'); ?>

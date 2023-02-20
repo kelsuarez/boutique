@@ -87,7 +87,8 @@ require_once('include/header.php');
 
 <h2 class="text-center py-5"><div class="badge badge-dark text-wrap p-3">Inscription</div></h2>
 
-<?= echo $erreur ?>
+<?= $erreur ?>
+
 
 <!-- $erreur .= '<div class="alert alert-danger" role="alert">Erreur format pseudo !</div>'; -->
 
