@@ -1,4 +1,92 @@
+<?php
+require_once('../include/init.php');
 
+if(!internauteConnecteAdmin()){
+    header('location:' . URL . 'connexion.php' );
+    exit();
+}
+
+
+
+
+
+
+
+
+if(isset($_GET['action'])){
+    if($_POST){
+        if(empty($erreur)){
+            if($_GET['action'] == 'update'){
+                $modifProduit = $pdo->prepare("UPDATE membre SET id_produit = :id_produit, reference = :reference, categorie = :categorie, titre = :titre, description = :description, couleur = :couleur, taille = :taille, public = :public, photo = :photo, prix = :prix, stock = :stock WHERE id_membre = :id_membre");
+                $modifProduit->bindValue(':id_produit', $_POST['id_produit'], PDO::PARAM_INT);
+                $modifProduit->bindValue(':reference', $_POST['reference'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':categorie', $_POST['categorie'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':titre', $_POST['titre'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':couleur', $_POST['couleur'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':taille', $_POST['taille'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':public', $_POST['public'], PDO::PARAM_INT);
+                $modifProduit->bindValue(':photo', $_POST['photo'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':prix', $_POST['prix'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':stock', $_POST['stock'], PDO::PARAM_STR);
+                $modifProduit->execute();
+
+                $queryProduit = $pdo->query("SELECT reference FROM produit WHERE id_produit = '$_GET[id_produit]'");
+                    $produit = $queryProduit->fetch(PDO::FETCH_ASSOC);
+                    $content .= '<div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
+                                    <strong>Félicitations !</strong> Modification de l\'utilisateur' . $produit['reference'] .  'est réussie 😉!
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>';
+            }else{
+                // si on récupère autre chose que update (et donc add) on entame une procédure d'insertion en BDD
+                $incluireProduit = $pdo->prepare(" INSERT INTO produit (reference, categorie, titre, description, couleur, taille, public, photo, prix, stock) VALUES (:reference, :categorie, :titre, :description, :couleur, :taille, :public, :photo, :prix, :stock) ");
+                $incluireProduit->bindValue(':reference', $_POST['reference'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':categorie', $_POST['categorie'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':titre', $_POST['titre'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':couleur', $_POST['couleur'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':taille', $_POST['taille'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':public', $_POST['public'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':photo', $_POST['photo'], PDO::PARAM_INT);
+                $incluireProduit->bindValue(':prix', $_POST['prix'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':stock', $_POST['stock'], PDO::PARAM_STR);
+                $incluireProduit->execute();
+            }
+        }
+    }
+    // procédure de récupération des infos en BDD pour les afficher dans le formulaire lorsque on fait un update (plus practique et plus sur)
+    
+}
+
+
+if($_GET['action'] == 'update'){
+    $tousProduit = $pdo->query("SELECT * FROM produit WHERE id_produit = '$_GET[id_produit]'");
+    $produitActuel = $tousProduit->fetch(PDO::FETCH_ASSOC);
+
+}
+$idProduit = (isset($produitActuel['id_produit'])) ? $produitActuel['id_produit'] : "";
+$reference = (isset($produitActuel['reference'])) ? $produitActuel['reference'] : "";
+$categorie = (isset($produitActuel['categorie'])) ? $produitActuel['categorie'] : "";
+$titre = (isset($produitActuel['titre'])) ? $produitActuel['titre'] : "";
+$description = (isset($produitActuel['description'])) ? $produitActuel['description'] : "";
+$taille = (isset($produitActuel['taille'])) ? $produitActuel['taille'] : "";
+$public = (isset($produitActuel['public'])) ? $produitActuel['public'] : "";
+$prix = (isset($produitActuel['prix'])) ? $produitActuel['prix'] : "";
+$stock = (isset($produitActuel['stock'])) ? $produitActuel['stock'] : "";
+        // A FAIRE 
+        //  COULEUR
+        //  PHOTO
+
+if($_GET['action'] == 'delete'){
+    $pdo->query("DELETE FROM produit WHERE id_produit = '$_GET[id_produit]'");
+}
+
+
+require_once('includeAdmin/header.php');
+
+?>
 
 <!-- $erreur .= '<div class="alert alert-danger" role="alert">Erreur format mot de passe !</div>'; -->
 
@@ -22,6 +110,7 @@
 
 <h2 class="pt-5">Formulaire  des produits</h2>
 
+<input type="hidden" name="id_produit" value="<?= $idProduit ?>">
 
 <form id="monForm" class="my-5" method="POST" action=""  enctype="multipart/form-data">
 
@@ -29,25 +118,25 @@
 
 <div class="row mt-5">
     <div class="col-md-4">
-    <label class="form-label" for="reference"><div class="badge badge-dark text-wrap">Référence</div></label>
-    <input class="form-control" type="text" name="reference" id="reference"  placeholder="Référence">
+        <label class="form-label" for="reference"><div class="badge badge-dark text-wrap">Référence</div></label>
+        <input class="form-control" type="text" name="reference" id="reference"  placeholder="Référence" value="<?= $reference?>">
     </div>
 
     <div class="col-md-4">
-    <label class="form-label" for="categorie"><div class="badge badge-dark text-wrap">Catégorie</div></label>
-    <input class="form-control" type="text" name="categorie" id="categorie"  placeholder="Catégorie">
+        <label class="form-label" for="categorie"><div class="badge badge-dark text-wrap">Catégorie</div></label>
+        <input class="form-control" type="text" name="categorie" id="categorie"  placeholder="Catégorie" value="<?= $categorie?>">
     </div>
 
     <div class="col-md-4">
-    <label class="form-label" for="titre"><div class="badge badge-dark text-wrap">Titre</div></label>
-    <input class="form-control" type="text" name="titre" id="titre"  placeholder="Titre">
+        <label class="form-label" for="titre"><div class="badge badge-dark text-wrap">Titre</div></label>
+        <input class="form-control" type="text" name="titre" id="titre"  placeholder="Titre" value="<?= $titre?>">
     </div>
 </div>
 
 <div class="row justify-content-around mt-5">
     <div class="col-md-6">
-    <label class="form-label" for="description"><div class="badge badge-dark text-wrap">Description</div></label>
-    <textarea class="form-control" name="description" id="description" placeholder="Description" rows="5"></textarea>
+        <label class="form-label" for="description"><div class="badge badge-dark text-wrap">Description</div></label>
+        <textarea class="form-control" name="description" id="description" placeholder="Description" rows="5" value="<?= $description?>"></textarea>
     </div>
 </div>
 
@@ -70,32 +159,32 @@
     <div class="col-md-4">
         <p><div class="badge badge-dark text-wrap">Taille</div></p>
 
-        <input type="radio" name="taille" id="taille1" value="small" >
+        <input type="radio" name="taille" id="taille1" value="small" <?= ($taille == "small") ? 'checked' : "" ?>>
         <label class="mx-1" for="taille1">Small</label>
 
-        <input type="radio" name="taille" id="taille2" value="medium" >
+        <input type="radio" name="taille" id="taille2" value="medium" <?= ($taille == "medium") ? 'checked' : "" ?>>
         <label class="mx-1" for="public2">Medium</label>
 
-        <input type="radio" name="taille" id="taille3" value="large" > 
+        <input type="radio" name="taille" id="taille3" value="large" <?= ($taille == "large") ? 'checked' : "" ?>> 
         <label class="mx-1" for="taille3">Large</label>
 
-        <input type="radio" name="taille" id="taille4" value="xlarge" > 
+        <input type="radio" name="taille" id="taille4" value="xlarge" <?= ($taille == "xlarge") ? 'checked' : "" ?>> 
         <label class="mx-1" for="taille4">XLarge</label>
     </div>
 
     <div class="col-md-4">
         <p><div class="badge badge-dark text-wrap">Public</div></p>
 
-        <input type="radio" name="public" id="public1" value="enfant" >
+        <input type="radio" name="public" id="public1" value="enfant" <?= ($public == "enfant") ? 'checked' : "" ?>>
         <label class="mx-1" for="public1">Enfant</label>
 
-        <input type="radio" name="public" id="public2" value="femme" >
+        <input type="radio" name="public" id="public2" value="femme" <?= ($public == "femme") ? 'checked' : "" ?>>
         <label class="mx-1" for="public2">Femme</label>
 
-        <input type="radio" name="public" id="public3" value="homme" >
+        <input type="radio" name="public" id="public3" value="homme" <?= ($public == "homme") ? 'checked' : "" ?>>
         <label class="mx-1" for="public3">Homme</label>
 
-        <input type="radio" name="public" id="public4" value="mixte" > 
+        <input type="radio" name="public" id="public4" value="mixte" <?= ($public == "mixte") ? 'checked' : "" ?>> 
         <label class="mx-1" for="public4">Mixte</label>
     </div>
 </div>
@@ -128,8 +217,8 @@
 </div>
 
 </form>
-
-<h2 class="py-5">Nombre de ... en base de données: </h2>
+<?php $nbProduit = $pdo->query("SELECT id_produit FROM produit");?>
+<h2 class="py-5">Nombre de produits en base de données: <?= $nbProduit->rowCount();?></h2>
 
 <div class="row justify-content-center py-5">
     <a href=''>
@@ -140,15 +229,32 @@
 </div>
 
 <table class="table table-dark text-center">
+    <?php $afficheProduits = $pdo->query("SELECT * FROM produit ORDER BY prix");?>
     <thead>
         <tr>
-            <th></th>
+            <?php for($i = 0; $i < $afficheProduits->columnCount(); $i++):
+                $colonne = $afficheProduits->getColumnMeta($i); ?>
+                <th><?= $colonne['name']?></th>
+            <?php endfor ;?>
+            <th colspan=2>Actions</th>
         </tr>
     </thead>
     <tbody>
+        <?php while($produit = $afficheProduits->fetch(PDO::FETCH_ASSOC)): ?>
         <tr>
-            <td></td>
+        <?php foreach($produit as $indice => $value): ?>
+                <?php if($indice == 'prix'):?>
+                    <td> <?php echo $value . '€' ?> </td>
+                <?php elseif($indice == 'photo'):?>
+                    <td><img src="<?php echo '../img/' . $value?>" class="img-fluid" width="50px"></td>
+                <?php else:?>
+                    <td> <?php echo $value ?> </td>
+                <?php endif; ?>
+                <?php endforeach; ?>
+            <td><a href='?action=update&id_produit=<?= $produit['id_produit']?>'><i class="bi bi-pen-fill text-warning"></i></a></td>
+            <td><a data-href="?action=delete&id_produit=<?= $produit['id_produit']?>" data-toggle="modal" data-target="#confirm-delete"><i class="bi bi-trash-fill text-danger" style="font-size: 1.5rem;"></i></a></td>
         </tr>
+        <?php endwhile; ?>
     </tbody>
 </table>
 
@@ -200,3 +306,5 @@
 
 <!-- modal -->
 
+
+<?php require_once('includeAdmin/footer.php'); ?>
