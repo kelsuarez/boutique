@@ -6,6 +6,7 @@ if(!internauteConnecte()){
     header('location:' . URL . 'connexion.php');
     exit();
 }
+
 if(isset($_GET['action']) && $_GET['action'] == 'validate'){
     $validate .= '<div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
                     Félicitations <strong>' . $_SESSION['membre']['pseudo'] .'</strong>, vous etes connecté 😉 !

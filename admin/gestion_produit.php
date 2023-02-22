@@ -1,3 +1,8 @@
+<!-- todo list 
+- faire tous les require_once necessaires
+- exclure de cette page tout ceux qui n'ont pas le statut d'admin
+- Afficher tous les produits dans un tableau (Attention, pour la colonne prix, a coté du prix, afficher le signe €, et pour la colonne image, réussir à afficher une image (sinon n'affiche que le nom du fichier image --- très difficile))
+-->
 <?php
 require_once('../include/init.php');
 

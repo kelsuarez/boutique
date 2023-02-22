@@ -1,3 +1,120 @@
+<?php
+require_once('../include/init.php');
+
+if(!internauteConnecteAdmin()){
+    header('location:' . URL . 'connexion.php' );
+    exit();
+}
+
+if(isset($_GET['action'])){
+    if($_POST){
+        if($_GET['action'] == 'update'){
+                $modifCommande = $pdo->prepare("UPDATE commande SET id_commande = :id_commande, montant = :montant, etat = :etat WHERE id_commande = :id_commande");
+                $modifCommande->bindValue(':id_commande', $_POST['id_commande'], PDO::PARAM_INT);
+                $modifCommande->bindValue(':montant', $_POST['montant'], PDO::PARAM_INT);
+                $modifCommande->bindValue(':etat', $_POST['etat'], PDO::PARAM_STR);
+                $modifCommande->execute();
+    
+                // Requete a mode explicative qui montre la commande modifié 
+                $queryCommande = $pdo->prepare("SELECT id_commande FROM commande WHERE id_commande = :id_commande");
+                $queryCommande->bindValue(':id_commande', $_GET['id_commande'], PDO::PARAM_INT);
+                $queryCommande->execute();
+                $commande = $queryCommande->fetch(PDO::FETCH_ASSOC);
+                // Display a success message
+                $content .= '<div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
+                                    <strong>Félicitations !</strong> Modification de la commande ' . $commande['id_commande'] .  ' est réussie 😉!
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>';
+        }else{
+                // on peut que modifier une commande, le rajout d'une commande est interdit
+        }
+    }
+
+    // Requette pour récupérer dans les formulaire les infos concernant pour la Modif
+    if($_GET['action'] == 'update'){
+        $detailleCommande = $pdo->query("SELECT * FROM commande WHERE id_commande = '$_GET[id_commande]'");
+        $commandeActuel = $detailleCommande->fetch(PDO::FETCH_ASSOC);
+    }
+    // je recupere mon id_commande
+    $id_commande = (isset($commandeActuel['id_commande'])) ? $commandeActuel['id_commande'] : "";
+    // je recupere mon id_user
+    // $id_membre = (isset($commandeActuel['id_membre'])) ? $commandeActuel['id_membre'] : "";
+    // je recupere le montant de ma commande
+    $montant = (isset($commandeActuel['montant'])) ? $commandeActuel['montant'] : "";
+    // je recupere l'etat de ma commande
+    $etat = (isset($commandeActuel['etat'])) ? $commandeActuel['etat'] : "";
+
+    // Requette pour supprimer une commande 
+    if($_GET['action'] == 'delete'){
+        $pdo->query("DELETE FROM commande WHERE id_commande = '$_GET[id_commande]'");
+    }
+}
+
+
+    
+
+
+
+
+
+
+
+
+require_once('includeAdmin/header.php');
+
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- $erreur .= '<div class="alert alert-danger" role="alert">Erreur format id membre !</div>'; -->
 
 <!-- $content .= '<div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
@@ -18,39 +135,54 @@
     </button>
 </div> -->
 
-<h2 class="my-2">Formulaire   des commandes</h2>
 
-<form method="POST"action="">
 
-    <!-- <div class="col-md-3 mt-5">
-    <label class="form-label" for="id_membre"><div class="badge badge-dark text-wrap">Id Membre</div></label>
-    <input type="text" class="form-control" name="id_membre" id="id_membre"  placeholder="Id du membre">
-    </div> -->
+
+
+
+
+
+<?php if(isset($_GET['action'])): ?>
+    <h2 class="my-2">Formulaire   des commandes</h2>
+    <form method="POST"action="">
+
+    <input type="hidden" name="id_commande" value="<?= $id_commande ?>">
+    <input type="text" name="id_membre" value="<?= $id_commande ?>">
 
     <div class="col-md-3 mt-5">
-    <label class="form-label" for="montant"><div class="badge badge-dark text-wrap">Montant</div></label>
-    <input type="text" class="form-control" name="montant" id="montant"  placeholder="Montant">
-    </div>
+        <label class="form-label" for="montant"><div class="badge badge-dark text-wrap">Montant</div></label>
+        <input type="text" class="form-control" name="montant" id="montant"  placeholder="Montant" value="<?= $montant?>">
+        </div>
 
-    <div class="col-md-4 mt-5">
-        <p><div class="badge badge-dark text-wrap">Etat de la livraison</div></p>
+        <div class="col-md-4 mt-5">
+            <p><div class="badge badge-dark text-wrap">Etat de la livraison</div></p>
 
-        <input type="radio" name="etat" id="etat1" value="en cours" >
-        <label class="mx-2" for="etat1"><div class="badge badge-danger text-wrap">En cours</div></label>
+            <input type="radio" name="etat" id="etat1" value="en cours" <?= ($etat == "en cours") ? 'checked' : "" ?>>
+            <label class="mx-2" for="etat1"><div class="badge badge-danger text-wrap">En cours</div></label>
 
-        <input type="radio" name="etat" id="etat2" value="envoyé" >
-        <label class="mx-2" for="etat2"><div class="badge badge-warning text-wrap">Envoyé</div></label>
+            <input type="radio" name="etat" id="etat2" value="envoyé" <?= ($etat == "envoyé") ? 'checked' : "" ?>>
+            <label class="mx-2" for="etat2"><div class="badge badge-warning text-wrap">Envoyé</div></label>
 
-        <input type="radio" name="etat" id="etat3" value="livré" > 
-        <label class="mx-2" for="etat3"><div class="badge badge-success text-wrap">Livré</div></label>
-    </div>
+            <input type="radio" name="etat" id="etat3" value="livré" <?= ($etat == "livré") ? 'checked' : "" ?>> 
+            <label class="mx-2" for="etat3"><div class="badge badge-success text-wrap">Livré</div></label>
+        </div>
 
-    <div class="col-md-1 mt-5">
-         <button type="submit" class="btn btn-outline-dark shadow rounded">Valider</button>
-    </div>
+        <div class="col-md-1 mt-5">
+            <button type="submit" class="btn btn-outline-dark shadow rounded">Valider</button>
+        </div>
 
-</form>
-<h2 class="py-5">Nombre de ... en base de données: </h2>
+    </form>
+<?php endif; ?>
+
+
+
+
+
+<?php $nbCommandes = $pdo->query("SELECT id_commande FROM commande");?>
+<h2 class="py-5">Nombre de commandes en base de données: <?= $nbCommandes->rowCount();?></h2>
+
+
+
 
 <!-- <div class="row justify-content-center py-5">
     <a href="?action=add">
@@ -61,17 +193,55 @@
 </div> -->
 
 <table class="table table-dark text-center">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
+        <?php $afficheCommande = $pdo->query("SELECT * FROM commande ORDER BY id_commande DESC");?>
+        <thead>
+            <tr>
+                <?php for($i = 0; $i < $afficheCommande->columnCount(); $i++):
+                    $colonne = $afficheCommande->getColumnMeta($i); ?>
+                    <th><?= $colonne['name']?></th>
+                <?php endfor ;?>
+                <th colspan=2>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while($commande = $afficheCommande->fetch(PDO::FETCH_ASSOC)): ?>
+            <tr>
+                <?php foreach($commande as $indice => $value): ?>
+                    <?php if($indice == 'montant'):?>
+                        <td> <?php echo $value . '€' ?> </td>
+                <?php else:?>
+                    <td> <?php echo $value ?> </td>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                <td><a href='?action=update&id_commande=<?= $commande['id_commande']?>'><i class="bi bi-pen-fill text-warning"></i></a></td>
+                <td><a data-href="?action=delete&id_commande=<?= $commande['id_commande']?>" data-toggle="modal" data-target="#confirm-delete"><i class="bi bi-trash-fill text-danger" style="font-size: 1.5rem;"></i></a></td>
+            </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <nav>
   <ul class="pagination justify-content-end">
@@ -141,3 +311,7 @@
 </div>
 <!-- modal -->
 
+
+
+
+<?php require_once('includeAdmin/footer.php'); ?>
