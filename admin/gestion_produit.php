@@ -44,7 +44,7 @@ if(isset($_GET['action'])){
             $erreur .= '<div class="alert alert-danger" role="alert">Erreur format taille !</div>';
         }
         // PHOTO
-        // if(!isset($_POST['reference']) || !preg_match('#^[A-Z]{3,20}$#', $_POST['reference'])){
+        // if(!isset($_POST['photo']) || !preg_match('#^[A-Z]{3,20}$#', $_POST['photo'])){
         //     $erreur .= '<div class="alert alert-danger" role="alert">Erreur format reference !</div>';
         // }
         // PRIX
@@ -55,13 +55,24 @@ if(isset($_GET['action'])){
         if(!isset($_POST['stock']) || !preg_match('#^[0-9]{0,5}$#', $_POST['stock'])){
             $erreur .= '<div class="alert alert-danger" role="alert">Erreur format code stock !</div>';
         }
+        // TRAITEMENT PHOTO
+        $photoBdd = "";
+        if($_GET['action'] == 'update'){
+            $photoBdd = $_POST['photo_actualle'];
+        }
+        if(!empty($_FILES['photo']['name'])){
+            $photo_nom = $_POST['reference'] . '_' . $_FILES['photo']['name'];
+            $photoBdd = "$photo_nom";
+            $photoDossier = RACINE_SITE . "img/$photo_nom";
+            copy($_FILES['photo']['tmp_name'], $photoDossier);
+        }
 
         // REQUETTE DE SI PAS DE ERREUR ON PEUT CONTINUER
         if(empty($erreur)){
 
             // REQUETTE DE UPDATE
             if($_GET['action'] == 'update'){
-                $modifProduit = $pdo->prepare("UPDATE produit SET id_produit = :id_produit, reference = :reference, categorie = :categorie, titre = :titre, description = :description, couleur = :couleur, taille = :taille, public = :public, prix = :prix, stock = :stock WHERE id_produit = :id_produit");
+                $modifProduit = $pdo->prepare("UPDATE produit SET id_produit = :id_produit, reference = :reference, categorie = :categorie, titre = :titre, description = :description, couleur = :couleur, taille = :taille, public = :public, photo = :photo, prix = :prix, stock = :stock WHERE id_produit = :id_produit");
                 $modifProduit->bindValue(':id_produit', $_POST['id_produit'], PDO::PARAM_INT);
                 $modifProduit->bindValue(':reference', $_POST['reference'], PDO::PARAM_STR);
                 $modifProduit->bindValue(':categorie', $_POST['categorie'], PDO::PARAM_STR);
@@ -70,7 +81,7 @@ if(isset($_GET['action'])){
                 $modifProduit->bindValue(':couleur', $_POST['couleur'], PDO::PARAM_STR);
                 $modifProduit->bindValue(':taille', $_POST['taille'], PDO::PARAM_STR);
                 $modifProduit->bindValue(':public', $_POST['public'], PDO::PARAM_STR);
-                // $modifProduit->bindValue(':photo', $_POST['photo'], PDO::PARAM_STR);
+                $modifProduit->bindValue(':photo', $photoBdd, PDO::PARAM_STR);
                 $modifProduit->bindValue(':prix', $_POST['prix'], PDO::PARAM_INT);
                 $modifProduit->bindValue(':stock', $_POST['stock'], PDO::PARAM_INT);
                 $modifProduit->execute();
@@ -87,7 +98,7 @@ if(isset($_GET['action'])){
             }else{
 
                 // REQUETTE DE INSERTION A LA BDD
-                $incluireProduit = $pdo->prepare(" INSERT INTO produit (reference, categorie, titre, description, couleur, taille, public, prix, stock) VALUES (:reference, :categorie, :titre, :description, :couleur, :taille, :public, :prix, :stock) ");
+                $incluireProduit = $pdo->prepare(" INSERT INTO produit (reference, categorie, titre, description, couleur, taille, public, photo, prix, stock) VALUES (:reference, :categorie, :titre, :description, :couleur, :taille, :public, :photo, :prix, :stock) ");
                 $incluireProduit->bindValue(':reference', $_POST['reference'], PDO::PARAM_STR);
                 $incluireProduit->bindValue(':categorie', $_POST['categorie'], PDO::PARAM_STR);
                 $incluireProduit->bindValue(':titre', $_POST['titre'], PDO::PARAM_STR);
@@ -95,9 +106,9 @@ if(isset($_GET['action'])){
                 $incluireProduit->bindValue(':couleur', $_POST['couleur'], PDO::PARAM_STR);
                 $incluireProduit->bindValue(':taille', $_POST['taille'], PDO::PARAM_STR);
                 $incluireProduit->bindValue(':public', $_POST['public'], PDO::PARAM_STR);
-                // $incluireProduit->bindValue(':photo', $_POST['photo'], PDO::PARAM_INT);
-                $incluireProduit->bindValue(':prix', $_POST['prix'], PDO::PARAM_STR);
-                $incluireProduit->bindValue(':stock', $_POST['stock'], PDO::PARAM_STR);
+                $incluireProduit->bindValue(':photo', $photoBdd, PDO::PARAM_STR);
+                $incluireProduit->bindValue(':prix', $_POST['prix'], PDO::PARAM_INT);
+                $incluireProduit->bindValue(':stock', $_POST['stock'], PDO::PARAM_INT);
                 $incluireProduit->execute();
             }
         }
@@ -118,6 +129,7 @@ if(isset($_GET['action'])){
     $couleur = (isset($produitActuel['couleur'])) ? $produitActuel['couleur'] : "";
     $taille = (isset($produitActuel['taille'])) ? $produitActuel['taille'] : "";
     $public = (isset($produitActuel['public'])) ? $produitActuel['public'] : "";
+    $photo = (isset($produitActuel['photo'])) ? $produitActuel['photo'] : "";
     $prix = (isset($produitActuel['prix'])) ? $produitActuel['prix'] : "";
     $stock = (isset($produitActuel['stock'])) ? $produitActuel['stock'] : "";
     // A FAIRE -> PHOTO
