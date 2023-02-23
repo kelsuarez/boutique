@@ -44,7 +44,7 @@ if(isset($_GET['action'])){
             $erreur .= '<div class="alert alert-danger" role="alert">Erreur format taille !</div>';
         }
         // PHOTO
-        // if(!isset($_POST['photo']) || !preg_match('#^[A-Z]{3,20}$#', $_POST['photo'])){
+        // if(!isset($_POST['reference']) || !preg_match('#^[A-Z]{3,20}$#', $_POST['reference'])){
         //     $erreur .= '<div class="alert alert-danger" role="alert">Erreur format reference !</div>';
         // }
         // PRIX
