@@ -270,7 +270,7 @@ require_once('includeAdmin/header.php');
 <!-- modal -->
 
 <!-- pour empecher la modale de s'ouvrir à chaque rafraichissement de page, le temps de terminer de coder cette page -->
-<?php if(isset($_GET['action']) || isset($_GET['page'])):?>
+<?php if(!isset($_GET['action']) && !isset($_GET['page'])):?>
     <div class="modal fade" id="myModalUsers" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
