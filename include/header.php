@@ -1,3 +1,9 @@
+<?php
+
+
+
+$afficheMenuPublic = $pdo->query("SELECT DISTINCT public FROM produit ORDER BY public ASC");
+?>
 <!-- $erreur .= '<div class="alert alert-danger" role="alert">Erreur pseudo inconnu !</div>'; -->
 
 <!-- $validate .= '<div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
@@ -19,14 +25,14 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
-         <!-- links pour les icon bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <!-- links pour les icon bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
 
-    <title></title>
+    <title><?= (isset($pageTitle)) ? $pageTitle : "La Boutique" ?></title>
 </head>
 <body>
 
-<header>
+  <header>
 
 <!-- ------------------- -->
 
@@ -36,51 +42,55 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
+  <!-- MENU DE PUBLIC A GAUCHE -->
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item mt-2">
         <a class="nav-link" href="<?= URL ?>">La Boutique</a>
       </li>
-      <!-- ----------- -->
-      <li class="nav-item">
-        <a class="nav-link" href=""><button type="button" class="btn btn-outline-success"></button></a>
-      </li>
-      <!-- ---------- -->
+      <?php while($public = $afficheMenuPublic->fetch(PDO::FETCH_ASSOC)): ?>  
+        <li class="nav-item">
+          <a class="nav-link" href="<?=URL?>?public=<?=$public['public']?>"><button type="button" class="btn btn-outline-success"><?= ucfirst($public['public'])?></button></a>
+        </li>
+      <?php endwhile ?>
     </ul>
+
+    <!-- MENU A DROIT -->
     <ul class="navbar-nav ml-auto">
-      <!-- -------------------------- -->
-    
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <button type="button" class="btn btn-outline-success">Espace <strong></strong></button>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="<?= URL ?>profil.php">Profil </a>
-          <a class="dropdown-item" href="<?= URL ?>panier.php">Panier </a>
-          <a class="dropdown-item" href="<?= URL ?>connexion.php?action=deconnexion">Déconnexion</a>
-        </div>
-      </li>
-    
-      <!-- ---------------------------- -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle mr-5" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <button type="button" class="btn btn-outline-success">Espace Membre</button>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="<?= URL ?>inscription.php"><button class="btn btn-outline-success">Inscription</button></a>
-          <a class="dropdown-item"><button class="btn btn-outline-success" data-toggle="modal" data-target="#connexionModal">
-            Connexion
-          </button></a>
-          <a class="dropdown-item" href="<?= URL ?>panier.php"><button class="btn btn-outline-success px-4">Panier</button></a>
-        </div>
-      </li>
-    
+      <!-- SI L'INTERNAUTE EST CONNECTE ON FAIT DISPARAITRE LES AUTRES MENUS -->
+      <?php if(internauteConnecte()):?>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-outline-success">Espace <strong><?= $_SESSION['membre']['pseudo']?></strong></button>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="<?= URL ?>profil.php">Profil <?= $_SESSION['membre']['pseudo']?> </a>
+            <a class="dropdown-item" href="<?= URL ?>panier.php">Panier <?= $_SESSION['membre']['pseudo']?></a>
+            <a class="dropdown-item" href="<?= URL ?>connexion.php?action=deconnexion">Déconnexion</a>
+          </div>
+        </li>
+      <!--  -->
+      <?php else:?>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mr-5" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-outline-success">Espace Membre</button>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="<?= URL ?>inscription.php"><button class="btn btn-outline-success">Inscription</button></a>
+            <a class="dropdown-item"><button class="btn btn-outline-success" data-toggle="modal" data-target="#connexionModal">
+              Connexion
+            </button></a>
+            <a class="dropdown-item" href="<?= URL ?>panier.php"><button class="btn btn-outline-success px-4">Panier</button></a>
+          </div>
+        </li>
+      <?php endif;?>
      <!-- ------------------------------------ -->
-    
-      <li class="nav-item mr-5">
-          <a class="nav-link" href="admin/index.php"><button type="button" class="btn btn-outline-success">Admin</button></a>
-      </li>
-    
+
+      <?php if(internauteConnecteAdmin()):?>
+        <li class="nav-item mr-5">
+            <a class="nav-link" href="admin/index.php"><button type="button" class="btn btn-outline-success">Admin</button></a>
+        </li>
+      <?php endif;?>
       <!-- ------------------------------------ -->
     </ul>
     <form class="form-inline my-2 my-lg-0">

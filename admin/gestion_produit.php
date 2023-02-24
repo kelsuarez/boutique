@@ -44,9 +44,17 @@ if(isset($_GET['action'])){
             $erreur .= '<div class="alert alert-danger" role="alert">Erreur format taille !</div>';
         }
         // PHOTO
-        // if(!isset($_POST['reference']) || !preg_match('#^[A-Z]{3,20}$#', $_POST['reference'])){
-        //     $erreur .= '<div class="alert alert-danger" role="alert">Erreur format reference !</div>';
-        // }
+        if(isset($_FILES['fichier']) && $_FILES['fichier']['error'] == 0) {
+            if ($_FILES['fichier']['size'] > $_POST['MAX_FILE_SIZE']) {
+                echo "Le fichier téléchargé est trop volumineux.";
+            }
+            $allowed = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png');
+            $filename = $_FILES['fichier']['name'];
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if(!in_array($ext, $allowed)) {
+                echo "Le type de fichier n'est pas autorisé.";
+            }
+        }
         // PRIX
         if(!isset($_POST['prix']) || !preg_match('#^[0-9]{0,5}$#', $_POST['prix'])){
             $erreur .= '<div class="alert alert-danger" role="alert">Erreur format code prix !</div>';
@@ -245,13 +253,15 @@ require_once('includeAdmin/header.php');
                 <label class="form-label" for="photo"><div class="badge badge-dark text-wrap">Photo</div></label>
                 <input class="form-control" type="file" name="photo" id="photo" placeholder="Photo">
             </div>
-            <!-- ----------------- -->
-            <div class="mt-4">
-                <p>Vous pouvez changer d'image
-                    <img src="" width="50px">
-                </p>
-            </div>
-            <!-- -------------------- -->
+            <!-- MODIF PHOTO -->
+            <?php if(!empty($photo)): ?>
+                <div class="mt-4">
+                    <p>Vous pouvez changer d'image
+                        <img src="<?= URL . 'img/' . $photo ?>" width="50px">
+                    </p>
+                </div>
+            <?php endif; ?>
+            <input type="hidden" name="photo_actualle" value="<?php $photo ?>">
             <!-- MODULE PRIX -->
             <div class="col-md-4">
                 <label class="form-label" for="prix"><div class="badge badge-dark text-wrap">Prix</div></label>

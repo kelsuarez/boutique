@@ -1,6 +1,9 @@
 <?php
 require_once('include/init.php');
 
+// TITLE DE PAGE
+$pageTitle = "Profil de " . $_SESSION['membre']['pseudo'];
+
 // si le user nest pas connecté, alors on lui interdit l'accés à la page profil (redirection vers la page connexion ou autre selon reflexion)
 if(!internauteConnecte()){
     header('location:' . URL . 'connexion.php');

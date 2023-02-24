@@ -1,7 +1,14 @@
 <?php
 require_once('include/init.php');
 
-// code a venir
+// TITLE DE PAGE
+$pageTitle = "Formulaire de connexion";
+
+if(isset($_GET['action']) && $_GET['action'] == 'deconnexion'){
+    unset($_SESSION['membre']);
+    header('location:' . URL . 'connexion.php');
+    exit();
+}
 
 if(internauteConnecte()){
     header('location:' . URL . 'profil.php');

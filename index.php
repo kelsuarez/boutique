@@ -1,51 +1,57 @@
 <?php
+
+// RECUPERATION INIT
 require_once('include/init.php');
 
-// code a venir
+// RECUPERATION D'AFFICHAGE
+require_once('include/affichage.php');
 
+// RECUPERATION HEADER
 require_once('include/header.php');
 ?>
 
 </div>
+
     <div class="container-fluid">
-    
         <div class="row my-5">
 
+            <!-- MENU ASSIDE AVEC LES CATEGORIES  -->
             <div class="col-md-2">
-
-            <div class="list-group text-center">
-                    
-                    <a class="btn btn-outline-success my-2" href=""></a>
-                    
+                <div class="list-group text-center">
+                <?php while($menuCategorie = $afficheMenuCategorie->fetch(PDO::FETCH_ASSOC)): ?>
+                    <a class="btn btn-outline-success my-2" href="<?=URL?>?categorie=<?=$menuCategorie['categorie']?>"><?=$menuCategorie['categorie']?></a>
+                <?php endwhile; ?>
                 </div>
-            
             </div>
 
-           <!-- --------------------------- -->
+            <!-- CONDITION POUR LE MENU ASSIDE AVEC LES CATEGORIES DES -->
+            <?php if(isset($_GET['categorie'])): ?>
             <div class="col-md-8">
             
                 <div class="text-center my-5">
                     <img class='img-fluid' src="img/la_boutique_bis.webp" alt="Bandeau de La Boutique" loading="lazy">
                 </div>
-
+                <!-- PHP MONTRER LE NOM DINAMIQUEMENT DE LE TITRE -->
                 <div class="row justify-content-around">
-                    <h2 class="py-5"><div class="badge badge-dark text-wrap">Nos </div></h2>
+                    <h2 class="py-5"><div class="badge badge-dark text-wrap">Nos categorie de <?= ucfirst($titreCategorie['categorie']) ?></div></h2>
                 </div>
-
+                <!-- PHP AFFICHAGE DE L'IMAGE DINAMIQUEMENT AVEC LES DESCRIPTION-->
                 <div class="row justify-content-around text-center">
-
-                        
-                    
+                    <?php while($categorie = $afficheProduits->fetch(PDO::FETCH_ASSOC)): ?>
                         <div class="card mx-3 shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
-                            <a href=""><img src="" class="card-img-top" alt="..."></a>
+                            <!-- IMAGE PLUS ALT -->
+                            <a href=""><img src="<?= URL . 'img/' . $categorie['photo']?>" class="card-img-top" alt="Photo de <?=$categorie['titre']?>"></a>
                             <div class="card-body">
-                                <h3 class="card-title"></h3>
-                                <h3 class="card-title"><div class="badge badge-dark text-wrap"> €</div></h3>
-                                <p class="card-text"></p>
+                                <!-- TITRE DE PRODUIT -->
+                                <h3 class="card-title"><?= $categorie['titre']?></h3>
+                                <!-- PRIX DE L'ARTICLE -->
+                                <h3 class="card-title"><div class="badge badge-dark text-wrap"><?= $categorie['prix']?> €</div></h3>
+                                <!-- DESCRIPTION DE L'ARTICLE -->
+                                <p class="card-text"><?= $categorie['description']?></p>
                                 <a href="" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
                             </div>
                         </div>
-                     
+                    <?php endwhile ?>
                 </div>
 
                 <nav aria-label="">
@@ -60,6 +66,7 @@ require_once('include/header.php');
                             <li class="mx-1 page-item ">
                                 <a class="btn btn-outline-success " href=""></a>
                             </li>
+
                         <!--  -->
                         <li class="mx-1 page-item ">
                             <a class="page-link text-success" href="" aria-label="Next">
@@ -72,35 +79,37 @@ require_once('include/header.php');
                
             </div>
 
-            <!-- ----------------------- -->
-
+            <!-- CONDITION POUR LE MENU NAV AVEC LES PUBLIC DES -->
+            <?php elseif(isset($_GET['public'])): ?>
             <div class="col-md-8">
             
                 <div class="text-center my-5">
                     <img class='img-fluid' src="img/la_boutique_bis.webp" alt="Bandeau de La Boutique" loading="lazy">
                 </div>
-
+                <!-- PHP MONTRER LE NOM DINAMIQUEMENT DE LE TITRE -->
                 <div class="row justify-content-around">
-                    
-                    <h2 class="py-5"><div class="badge badge-dark text-wrap"> <!-- ternaire selon modèles mixtes ou modèles pour enfants, femmes, hommes--> </div></h2>
+                    <h2 class="py-5"><div class="badge badge-dark text-wrap">Nos vêtements <?= ucfirst($titrePublic['public']) ?>s</div>
+                    </h2>
                 </div>
-
+                <!-- PHP AFFICHAGE DE L'IMAGE DINAMIQUEMENT AVEC LES DESCRIPTION-->
                 <div class="row justify-content-around text-center">
-
-                        
-                    
+                    <?php while($produit = $afficheProduits->fetch(PDO::FETCH_ASSOC)): ?>
                         <div class="card mx-3 shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
-                            <a href=""><img src="" class="card-img-top" alt="..."></a>
+                            <!-- IMAGE PLUS ALT -->
+                            <a href=""><img src="<?= URL . 'img/' . $produit['photo']?>" class="card-img-top" alt="Photo de <?=$produit['titre']?>"></a>
                             <div class="card-body">
-                                <h3 class="card-title"></h3>
-                                <h3 class="card-title"><div class="badge badge-dark text-wrap"> €</div></h3>
-                                <p class="card-text"></p>
+                                <!-- TITRE DE PRODUIT -->
+                                <h3 class="card-title"><?= $produit['titre']?></h3>
+                                <!-- PRIX DE L'ARTICLE -->
+                                <h3 class="card-title"><div class="badge badge-dark text-wrap"><?= $produit['prix']?> €</div></h3>
+                                <!-- DESCRIPTION DE L'ARTICLE -->
+                                <p class="card-text"><?= $produit['description']?></p>
                                 <a href="" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
                             </div>
                         </div>
-                    
+                    <?php endwhile ?>
                 </div>
-
+                
                 <nav aria-label="">
                 <!-- dans les 3 <a href> je dois faire référence à la catégorie, en plus de la page, sinon cela ne fonctionnera pas -->
                     <ul class="pagination justify-content-end">
@@ -126,20 +135,18 @@ require_once('include/header.php');
             
             </div>
 
-            <!-- ------------------------------ -->
-
+            <!-- AFFICHAGE SI ON DEMANDE RIEN AUCUNE DES AUTRES CONDITIONS  -->
+            <?php else: ?>
             <div class="col-md-8">
-
                 <div class="row justify-content-around py-5">
                     <img class='img-fluid' src="img/la_boutique.webp" alt="Bandeau de La Boutique" loading="lazy">    
                 </div>
-
             </div>
-             
 
+            <?php endif; ?>
         </div>
-
     </div>
+    
 <div class="container">
 
 <?php require_once('include/footer.php');

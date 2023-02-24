@@ -1,7 +1,7 @@
 <?php
 require_once('include/init.php');
 
-// code a venir
+$pageTitle = (internauteConnecte()) ? "Panier de " . $_SESSION['membre']['pseudo'] : "Parnier";
 
 require_once('include/header.php');
 ?>
