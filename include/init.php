@@ -1,8 +1,12 @@
 <?php
 // dans ce fichier init, on va coder tout ce qui va nous servir sur l'intégralité des fichiers de notre boutique
 
-// connexion à la bdd
-$pdo = new PDO('mysql:host=localhost;dbname=boutique', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8') );
+// Connexion à la base de données
+$pdo = new PDO('mysql:host=db5012100074.hosting-data.io;dbname=dbs10181395;charset=utf8', 'dbu1410952', 'Ionos123456!!', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+
+
+
+
 
 // le session_start obligatoire en haut de chaque fichier
 session_start();
@@ -12,7 +16,7 @@ session_start();
 define('RACINE_SITE', $_SERVER['DOCUMENT_ROOT'] .'/boutique/' );
 
 // constante URL pour notre projet (a modifier avec le nom de domaine plus tard lorsque le site sera hébergé, mis en ligne)
-define('URL', 'http://localhost/boutique/');
+define('URL', 'https://boutique.dwsuarez.com/');
 
 // initialisation de qlq variables utiles sur tout le site
 $erreur = "";
