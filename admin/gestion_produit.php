@@ -10,6 +10,25 @@ if(!internauteConnecteAdmin()){
     exit();
 }
 
+// PAGINATION PRODUITS
+if(isset($_GET['page']) && !empty($_GET['page'])){
+    $pageCourante = (int) strip_tags($_GET['page']);
+}else{
+    $pageCourante = 1;
+}
+
+$queryProduit = $pdo->query("SELECT COUNT(id_produit) AS nombreProduit FROM produit");
+$resultatProduits = $queryProduit->fetch();
+$nombreProduit = (int) $resultatProduits['nombreProduit'];
+
+// echo debug($nombreProduit);
+
+$parPage = 10;
+
+$nombrePages = ceil($nombreProduit / $parPage);
+
+$premierProduit = ($pageCourante - 1) * $parPage;
+
 // REQUETTE GET POUR TRAVAIILLER SUR L'URL
 if(isset($_GET['action'])){
 
@@ -295,7 +314,7 @@ require_once('includeAdmin/header.php');
 
 <!-- AFFICHAGE DE MON TABLEAU PRODUIT -->
 <table class="table table-dark text-center">
-    <?php $afficheProduits = $pdo->query("SELECT * FROM produit ORDER BY id_produit DESC");?>
+    <?php $afficheProduits = $pdo->query("SELECT * FROM produit ORDER BY prix ASC LIMIT $parPage OFFSET $premierProduit");?>
     <thead>
         <tr>
             <?php for($i = 0; $i < $afficheProduits->columnCount(); $i++):
@@ -324,22 +343,23 @@ require_once('includeAdmin/header.php');
     </tbody>
 </table>
 
-<!-- AFFICHAGE DE MA NAV -->
+<!-- AFFICHAGE DE MA NAV PAGINATION -->
 <nav>
   <ul class="pagination justify-content-end">
-    <li class="page-item ">
-        <a class="page-link text-dark" href="" aria-label="Previous">
+    <li class="page-item <?= ($pageCourante == 1) ? 'disabled' : '' ?>">
+        <a class="page-link text-dark" href="?page=<?=$pageCourante - 1 ?>" aria-label="Previous">
             <span aria-hidden="true">précédente</span>
             <span class="sr-only">Previous</span>
         </a>
     </li>
+    <?php for($page = 1; $page <= $nombrePages; $page++): ?>
+    <li class="mx-1 page-item">
+        <a class="btn btn-outline-dark <?= ($pageCourante == $page) ? 'active' : '' ?>" href="?page=<?= $page ?>"><?= $page ?></a>
+    </li>
+    <?php endfor; ?>
     
-        <li class="mx-1 page-item">
-            <a class="btn btn-outline-dark " href=""></a>
-        </li>
-    
-    <li class="page-item ">
-        <a class="page-link text-dark" href="" aria-label="Next">
+    <li class="page-item <?= ($pageCourante == $nombrePages) ? 'disabled' : '' ?>">
+        <a class="page-link text-dark" href="?page=<?=$pageCourante + 1 ?>" aria-label="Next">
             <span aria-hidden="true">suivante</span>
             <span class="sr-only">Next</span>
         </a>

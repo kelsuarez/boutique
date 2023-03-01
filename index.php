@@ -40,7 +40,7 @@ require_once('include/header.php');
                     <?php while($categorie = $afficheProduits->fetch(PDO::FETCH_ASSOC)): ?>
                         <div class="card mx-3 shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
                             <!-- IMAGE PLUS ALT -->
-                            <a href=""><img src="<?= URL . 'img/' . $categorie['photo']?>" class="card-img-top" alt="Photo de <?=$categorie['titre']?>"></a>
+                            <a href="fiche_produit.php?id_produit=<?= $categorie['id_produit']?>"><img src="<?= URL . 'img/' . $categorie['photo']?>" class="card-img-top" alt="Photo de <?=$categorie['titre']?>"></a>
                             <div class="card-body">
                                 <!-- TITRE DE PRODUIT -->
                                 <h3 class="card-title"><?= $categorie['titre']?></h3>
@@ -48,28 +48,27 @@ require_once('include/header.php');
                                 <h3 class="card-title"><div class="badge badge-dark text-wrap"><?= $categorie['prix']?> €</div></h3>
                                 <!-- DESCRIPTION DE L'ARTICLE -->
                                 <p class="card-text"><?= $categorie['description']?></p>
-                                <a href="" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
+                                <a href="fiche_produit.php?id_produit=<?= $categorie['id_produit']?>" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
                             </div>
                         </div>
                     <?php endwhile ?>
                 </div>
-
+                <!-- dans les 3 <a href> je dois faire référence à la catégorie, en plus de la page, sinon cela ne fonctionnera pas -->
                 <nav aria-label="">
                     <ul class="pagination justify-content-end">
-                        <li class="mx-1 page-item  ">
-                            <a class="page-link text-success" href="" aria-label="Previous">
+                        <li class="mx-1 page-item <?= ($pageCourante == 1) ? 'disabled' : '' ?>">
+                            <a class="page-link text-success" href="?page=<?=$pageCourante - 1 ?>" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="sr-only">Previous</span>
                             </a>
                         </li>
-                        <!--  -->
+                        <?php for($page = 1; $page <= $nombreCategorie; $page++): ?>
                             <li class="mx-1 page-item ">
-                                <a class="btn btn-outline-success " href=""></a>
+                                <a class="btn btn-outline-success <?= ($pageCourante == $page) ? 'active' : '' ?>" href="?page=<?= $page ?>"><?= $page ?></a>
                             </li>
-
-                        <!--  -->
-                        <li class="mx-1 page-item ">
-                            <a class="page-link text-success" href="" aria-label="Next">
+                        <?php endfor; ?>
+                        <li class="mx-1 page-item <?= ($pageCourante == $nombrePages) ? 'disabled' : '' ?>">
+                            <a class="page-link text-success" href="?page=<?=$pageCourante + 1 ?>" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                                 <span class="sr-only">Next</span>
                             </a>
@@ -96,7 +95,7 @@ require_once('include/header.php');
                     <?php while($produit = $afficheProduits->fetch(PDO::FETCH_ASSOC)): ?>
                         <div class="card mx-3 shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
                             <!-- IMAGE PLUS ALT -->
-                            <a href=""><img src="<?= URL . 'img/' . $produit['photo']?>" class="card-img-top" alt="Photo de <?=$produit['titre']?>"></a>
+                            <a href="fiche_produit.php?id_produit=<?= $produit['id_produit']?>"><img src="<?= URL . 'img/' . $produit['photo']?>" class="card-img-top" alt="Photo de <?=$produit['titre']?>"></a>
                             <div class="card-body">
                                 <!-- TITRE DE PRODUIT -->
                                 <h3 class="card-title"><?= $produit['titre']?></h3>
@@ -104,7 +103,7 @@ require_once('include/header.php');
                                 <h3 class="card-title"><div class="badge badge-dark text-wrap"><?= $produit['prix']?> €</div></h3>
                                 <!-- DESCRIPTION DE L'ARTICLE -->
                                 <p class="card-text"><?= $produit['description']?></p>
-                                <a href="" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
+                                <a href="fiche_produit.php?id_produit=<?= $produit['id_produit']?>" class="btn btn-outline-success"><i class='bi bi-search'></i> Voir Produit</a>
                             </div>
                         </div>
                     <?php endwhile ?>

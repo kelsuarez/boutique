@@ -7,7 +7,25 @@ $afficheMenuCategorie = $pdo->query("SELECT DISTINCT categorie FROM produit ORDE
 if(isset($_GET['categorie'])){
 
     // pagination pour les categories
-    
+
+
+
+    // PAGINATION PRODUITS
+    if(isset($_GET['page']) && !empty($_GET['page'])){
+        $pageCourante = (int) strip_tags($_GET['page']);
+    }else{
+        $pageCourante = 1;
+    }
+    $queryProduit = $pdo->query("SELECT COUNT(id_produit) AS nombreCategorie FROM produit");
+    $resultatCategorie = $queryProduit->fetch();
+    $nombreCategorie = (int) $resultatCategorie['nombreCategorie'];
+    // echo debug($nombreProduit);
+    $parPage = 3;
+    $nombrePages = ceil($nombreCategorie / $parPage);
+    $premierProduit = ($pageCourante - 1) * $parPage;
+
+
+
     // fin pagination pour les categories
 
     // AFFICHAGE DES PRODUITS PAR PUBLIC
@@ -44,9 +62,19 @@ if(isset($_GET['public'])){
 // fin affichage par public
 
 // ---------------------------------------------------------------------------------------
-// Tout ce qui concerne la fiche produit
 
-// affichage d'un produit
+// Tout ce qui concerne la fiche produit
+if(isset($_GET['id_produit'])){
+
+    // AFFICHAGE DES PRODUITS PAR ID_PRODUIT
+    $afficheProduitSelect = $pdo->query("SELECT * FROM produit WHERE id_produit = '$_GET[id_produit]'"); 
+    if($afficheProduitSelect->rowCount() <= 0){
+        header('location:' . URL);
+        exit;
+    }
+    $detail = $afficheProduitSelect->fetch(PDO::FETCH_ASSOC);
+
+}
 
 // fin affichage d'un seul produit
 

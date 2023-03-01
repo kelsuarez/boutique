@@ -6,6 +6,30 @@ if(!internauteConnecteAdmin()){
     exit();
 }
 
+// PAGINATION PRODUITS
+if(isset($_GET['page']) && !empty($_GET['page'])){
+    $pageCourante = (int) strip_tags($_GET['page']);
+}else{
+    $pageCourante = 1;
+}
+
+$queryProduit = $pdo->query("SELECT COUNT(id_membre) AS nombreMembre FROM membre");
+$resultatMembres = $queryProduit->fetch();
+$nombreMembre = (int) $resultatMembres['nombreMembre'];
+
+// echo debug($nombreProduit);
+
+$parPage = 5;
+
+$nombrePages = ceil($nombreMembre / $parPage);
+
+$premierMembre = ($pageCourante - 1) * $parPage;
+
+
+
+
+
+
 // au préalable, pour introduire le formulaire, je vérifie que j'ai reçu dans l'URL un indice action. Ca permettra de ne pas répéter plusieurs fois cette vérification dans tout le traitement du formulaire qui va suivre
 if(isset($_GET['action'])){
     if($_POST){
@@ -195,7 +219,7 @@ require_once('includeAdmin/header.php');
 </div>
 
 <table class="table table-dark text-center">
-        <?php $afficheUsers = $pdo->query("SELECT * FROM membre ORDER BY pseudo");?>
+        <?php $afficheUsers = $pdo->query("SELECT * FROM membre ORDER BY pseudo ASC LIMIT $parPage OFFSET $premierMembre");?>
         <thead>
             <tr>
                 <?php for($i = 0; $i < $afficheUsers->columnCount(); $i++):
@@ -224,19 +248,20 @@ require_once('includeAdmin/header.php');
 
 <nav>
   <ul class="pagination justify-content-end">
-    <li class="page-item ">
-        <a class="page-link text-dark" href="" aria-label="Previous">
+    <li class="page-item <?= ($pageCourante == 1) ? 'disabled' : '' ?>">
+        <a class="page-link text-dark" href="?page=<?=$pageCourante - 1 ?>" aria-label="Previous">
             <span aria-hidden="true">précédente</span>
             <span class="sr-only">Previous</span>
         </a>
     </li>
-    
-        <li class="mx-1 page-item">
-            <a class="btn btn-outline-dark " href=""></a>
+    <?php for($page = 1; $page <= $nombrePages; $page++): ?>
+        <li class="mx-1 page-item <?= ($pageCourante == $page) ? 'active' : '' ?>">
+            <a class="btn btn-outline-dark " href="?page=<?= $page ?>"><?= $page ?></a>
         </li>
-    
-    <li class="page-item ">
-        <a class="page-link text-dark" href="" aria-label="Next">
+    <?php endfor; ?>
+
+    <li class="page-item <?= ($pageCourante == $nombrePages) ? 'disabled' : '' ?>">
+        <a class="page-link text-dark" href="?page=<?=$pageCourante + 1 ?>" aria-label="Next">
             <span aria-hidden="true">suivante</span>
             <span class="sr-only">Next</span>
         </a>
